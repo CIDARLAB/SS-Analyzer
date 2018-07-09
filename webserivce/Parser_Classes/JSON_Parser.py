@@ -207,31 +207,31 @@ def create_task():
             if(component["id"] == connection["source"]["component"]):
                 #If Port is source flow rate is equal to the flow in
                 if(component["entity"] == "PORT"):
-                    #G.add_edge(component["id"],connection["name"], pressure = Pressure(component["name"],None) , flow_eq = None, flow = 1.)
-                    G.add_node(component["id"]+'_'+connection["name"], pressure = Pressure(component["name"],None) , flow_eq = None, flow = 1.)
-                    G.add_edge(component["id"],component["id"]+'_'+connection["name"])
-                    G.add_edge(component["id"]+'_'+connection["name"],connection["name"])
+                    G.add_edge(component["id"],connection["name"], pressure = Pressure(component["name"],None) , flow_eq = None, flow = 1.)
+                    # G.add_node(component["id"]+'_'+connection["name"], pressure = Pressure(component["name"],None) , flow_eq = None, flow = 1.)
+                    # G.add_edge(component["id"],component["id"]+'_'+connection["name"])
+                    # G.add_edge(component["id"]+'_'+connection["name"],connection["name"])
                 #All other cases
                 else:
-                    #G.add_edge(connection["name"],component["id"], pressure = Pressure(connection["name"],None), flow_eq = None, flow = 0.)
-                    G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(connection["name"],None), flow_eq = None, flow = 0.)
-                    G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
-                    G.add_edge(connection["name"]+'_'+component["id"],component["id"])
+                    G.add_edge(connection["name"],component["id"], pressure = Pressure(connection["name"],None), flow_eq = None, flow = 0.)
+                    # G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(connection["name"],None), flow_eq = None, flow = 0.)
+                    # G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
+                    # G.add_edge(connection["name"]+'_'+component["id"],component["id"])
             #Create edges from primitive to sinks
             if(component["id"] == connection["sinks"][0]["component"]):
                 #If Port is sink it is a final output and you can set the pressure to atm pressure (Pa)
                 if(component["entity"] == "PORT"):
                     #101325 Pa is atmospheric pressure 
-                    #G.add_edge(connection["name"],component["id"], pressure = Pressure(component["name"],101325), flow_eq = None, flow = 0.)
-                    G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(component["name"],101325), flow_eq = None, flow = 0.)
-                    G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
-                    G.add_edge(connection["name"]+'_'+component["id"],component["id"])
+                    G.add_edge(connection["name"],component["id"], pressure = Pressure(component["name"],101325), flow_eq = None, flow = 0.)
+                    # G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(component["name"],101325), flow_eq = None, flow = 0.)
+                    # G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
+                    # G.add_edge(connection["name"]+'_'+component["id"],component["id"])
                 #All other cases 
                 else:
-                    #G.add_edge(connection["name"],component["id"], pressure = Pressure(component["name"],None), flow_eq = None, flow = 0.)
-                    G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(component["name"],None), flow_eq = None, flow = 0.)
-                    G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
-                    G.add_edge(connection["name"]+'_'+component["id"],component["id"])
+                    G.add_edge(connection["name"],component["id"], pressure = Pressure(component["name"],None), flow_eq = None, flow = 0.)
+                    # G.add_node(connection["name"]+'_'+component["id"], pressure = Pressure(component["name"],None), flow_eq = None, flow = 0.)
+                    # G.add_edge(connection["name"],connection["name"]+'_'+component["id"])
+                    # G.add_edge(connection["name"]+'_'+component["id"],component["id"])
     #Create edge_list object
     edge_list = G.edges()
     #Initialize dict which stores how many outputs each primitive has

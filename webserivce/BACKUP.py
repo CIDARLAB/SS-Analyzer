@@ -306,7 +306,6 @@ def create_task():
             G.node[edge[0]]["Total_R"] = 1/R_Sum
 
 
-
     check_edge = []
     print("Node Data: \n")
     for edge in edge_list:
