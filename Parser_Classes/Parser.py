@@ -7,7 +7,19 @@ from Target import Target
 import networkx as nx
 import json
 
-def Parse(JSON):    
+def Parse(JSON):   
+    """[Parse through input JSON file and generate instances of classes as well as 
+    basic unannotated multigraph]
+    
+    Arguments:
+        JSON {JSON} -- 3duF/Fluigi produced JSON design file
+    
+    Returns:
+        Networkx Multigraph {G} -- Multigraph containing all component vertices with corresponding edges 
+        (no additional information is annotated)
+    """
+
+     
     #Initialize Variables
     #parsed_JSON = json.load(open('JSON_Tests/test.json'))
     parsed_JSON = JSON

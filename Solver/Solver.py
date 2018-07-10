@@ -6,6 +6,20 @@ import numpy as np
 import json
 
 def annotate(multinet,JSON):
+    """[Calculate all resistance values using primitive resistance models and store in dictionary. Also
+    annotate multigraph edges with pressure object and flow rate information]
+    
+    Arguments:
+        multinet {Networkx Multigraph} -- Multigraph containing all component vertices with corresponding edges 
+        (no additional information is annotated)
+
+        JSON {JSON} -- 3duF/Fluigi produced JSON design file
+
+    Returns:
+        Resistance Dictionary {resistance_data} -- Dictionary containing all component or channel segments resistance values. 
+        Key values are component id. 
+    """
+
 
     #Include flow_dict in input arguments later to account for user specified flow rates 
     parsed_JSON = JSON
@@ -65,6 +79,21 @@ def annotate(multinet,JSON):
 
 
 def solve(multinet,r_data):
+    """[Calculate pressure drop for each terminal (point where connenction meets component) in multigraph, and
+    annotate edges for input Multigraph]
+    
+    Arguments:
+        multinet {Networkx Multigraph} -- Multigraph containing all component vertices with corresponding edges. 
+        Pressure objects and flow rates are annotated in Multigraph edges. 
+
+        r_data {Dictionary} -- Dictionary containing all component or channel segments resistance values. 
+        Key values are component id. 
+    
+    Returns:
+        Networkx Multigraph {G} -- Multigraph containing all component vertices with corresponding edges. 
+        Pressure drop values are appended to corresponding edges.  
+    """
+
 
     G = multinet
     resistance_data = r_data

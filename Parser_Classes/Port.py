@@ -1,4 +1,6 @@
 class Port:
+    """[Stores all port information from JSON design file. Currently unused in multigraph.]
+    """
 
     def __init__(self,x,y,label,layer):
         self.x = x

@@ -1,4 +1,7 @@
 class Connection:
+    """[Stores all connection information from JSON design file. Component information used to
+    generate electrical model in multigraph structure]
+    """
 
     def __init__(self,sinks,name,ID,source,params,layer):
         self.sinks = sinks

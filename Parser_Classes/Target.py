@@ -1,4 +1,6 @@
 class Target:
+    """[Stores all target information from JSON design file. Currently unused in multigraph.]
+    """
 
     def __init__(self,component,port):
         self.component = component
