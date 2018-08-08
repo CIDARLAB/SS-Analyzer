@@ -252,19 +252,26 @@ def solve(multinet,r_data):
                 print("Edge: "+edge[0]+","+edge[1])
                 print("\n")
 
-                #Identify index of unknown P value and store positive, 1/R, value in same index in R_Matrix
-                column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Positive"].id)
-                R_Matrix[row,column] = R_Matrix[row,column] + 1/current_edge_data[0]["flow_eq"]["Resistance"]
+                if(current_edge_data[0]["pressure"].id not in P_Solved):
+                    P_Solved.append(current_edge_data[0]["pressure"].id)
+
+                    #Identify index of unknown P value and store positive, 1/R, value in same index in R_Matrix
+                    column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Positive"].id)
+                    R_Matrix[row,column] = R_Matrix[row,column] + 1/current_edge_data[0]["flow_eq"]["Resistance"]
+                    
+                    #Identify index of unknown P value and store negative, -1/R, value in same index in R_Matrix
+                    column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Negative"].id)
+                    R_Matrix[row,column] = R_Matrix[row,column] - 1/current_edge_data[0]["flow_eq"]["Resistance"]
+                    
+                    #Set known value of flow rate equal to equation
+                    K_Matrix[row,0] = current_edge_data[0]["flow"]
+                    
+                    #Equation is filled in so move to next row
+                    row = row + 1
                 
-                #Identify index of unknown P value and store negative, -1/R, value in same index in R_Matrix
-                column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Negative"].id)
-                R_Matrix[row,column] = R_Matrix[row,column] - 1/current_edge_data[0]["flow_eq"]["Resistance"]
-                
-                #Set known value of flow rate equal to equation
-                K_Matrix[row,0] = current_edge_data[0]["flow"]
-                
-                #Equation is filled in so move to next row
-                row = row + 1
+                #Already included pressure as part of other equation so keep row the same 
+                else:
+                    row = row 
 
             #Fill in matrices according to characteristics of class 3 equations
             elif(current_edge_data[0]["flow_eq"]["Class"] == 3):
@@ -272,100 +279,109 @@ def solve(multinet,r_data):
                 print("CLASS 3 ROW: %i" % row)
                 print("Edge: "+edge[0]+","+edge[1])
                 print("\n")
-                ############## Information stored in current edge ##############
-                
-                #Identify index of unknown P value and store positive, 1/R, value in same index in R_Matrix
-                column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Positive"].id)
-                R_Matrix[row,column] = R_Matrix[row,column] + 1/current_edge_data[0]["flow_eq"]["Resistance"]
 
-                #Set equation equal to known constant of output pressure over junction resistance
-                K_Matrix[row,0] = (101325)/current_edge_data[0]["flow_eq"]["Resistance"]
-                
-                ############## Information stored in current edge ##############
+                if(current_edge_data[0]["pressure"].id not in P_Solved):
+                    P_Solved.append(current_edge_data[0]["pressure"].id)
 
-                ############## Information stored in previous edge(s) ##############
+                    ############## Information stored in current edge ##############
+                    
+                    #Identify index of unknown P value and store positive, 1/R, value in same index in R_Matrix
+                    column = Unknown_P.index(current_edge_data[0]["flow_eq"]["Positive"].id)
+                    R_Matrix[row,column] = R_Matrix[row,column] + 1/current_edge_data[0]["flow_eq"]["Resistance"]
 
-                #Check if there are multiple inputs to source node of edge
-                if len(current_edge_data[0]["flow_eq"]["Source_Neighbors"]) > 1:
-                    P_ids = []
-                    #Loop through neighbors and store corresponding pressure values
-                    for neighbor in current_edge_data[0]["flow_eq"]["Source_Neighbors"]:
-                        edge_data = G.get_edge_data(neighbor,edge[0])
-                        P_ids.append(edge_data[0]["pressure"].id)
-                    #Check if there is only 1 unique input pressure from the multiple inputs
-                    if len(set(P_ids)) == 1:
+                    #Set equation equal to known constant of output pressure over junction resistance
+                    K_Matrix[row,0] = (101325)/current_edge_data[0]["flow_eq"]["Resistance"]
+                    
+                    ############## Information stored in current edge ##############
+
+                    ############## Information stored in previous edge(s) ##############
+
+                    #Check if there are multiple inputs to source node of edge
+                    if len(current_edge_data[0]["flow_eq"]["Source_Neighbors"]) > 1:
+                        P_ids = []
+                        #Loop through neighbors and store corresponding pressure values
+                        for neighbor in current_edge_data[0]["flow_eq"]["Source_Neighbors"]:
+                            edge_data = G.get_edge_data(neighbor,edge[0])
+                            P_ids.append(edge_data[0]["pressure"].id)
+                        #Check if there is only 1 unique input pressure from the multiple inputs
+                        if len(set(P_ids)) == 1:
+                            edge_data = G.get_edge_data(current_edge_data[0]["flow_eq"]["Source_Neighbors"][0],edge[0])
+                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
+                            R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
+
+                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
+                            R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
+                        #If there is more than 1 unique input presssure
+                        else:
+                            #For each edge connected to source node of current edge include flow rate equations 
+                            for neighbor in current_edge_data[0]["flow_eq"]["Source_Neighbors"]:
+                                edge_data = G.get_edge_data(neighbor,edge[0])
+
+                                column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
+                                R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
+
+                                column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
+                                R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
+                    #If there is only 1 input to source node of edge 
+                    else:
                         edge_data = G.get_edge_data(current_edge_data[0]["flow_eq"]["Source_Neighbors"][0],edge[0])
                         column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
                         R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
 
                         column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
                         R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
-                    #If there is more than 1 unique input presssure
-                    else:
-                        #For each edge connected to source node of current edge include flow rate equations 
-                        for neighbor in current_edge_data[0]["flow_eq"]["Source_Neighbors"]:
-                            edge_data = G.get_edge_data(neighbor,edge[0])
+                    
+                    ############## Information stored in previous edge(s) ##############
 
-                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
-                            R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
+                    ############## INFORMATION FROM NEXT EDGE (NOT INCLUDED FROM CURRENT EDGE) ##############
 
-                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
-                            R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
-                #If there is only 1 input to source node of edge 
-                else:
-                    edge_data = G.get_edge_data(current_edge_data[0]["flow_eq"]["Source_Neighbors"][0],edge[0])
-                    column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
-                    R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
-
-                    column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
-                    R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
-                
-                ############## Information stored in previous edge(s) ##############
-
-                ############## INFORMATION FROM NEXT EDGE (NOT INCLUDED FROM CURRENT EDGE) ##############
-
-                #Check if sink of edge was connected to another component other than a output port 
-                if len(current_edge_data[0]["flow_eq"]["Sink_Neighbors"]) > 1:
-                    print("FILL IN #1")
-                    print("Edge: "+edge[0]+","+edge[1])
-                    print("\n")
-                    P_ids = []
-                    #Loop through neighbors and store corresponding pressure values
-                    for neighbor in current_edge_data[0]["flow_eq"]["Sink_Neighbors"]:
-                        edge_data = G.get_edge_data(neighbor,edge[0])
-                        P_ids.append(edge_data[0]["pressure"].id)
-                    #Check if there is only 1 unique output pressure from the multiple outputs
-                    if len(set(P_ids)) == 1:
-                        edge_data = G.get_edge_data(edge[1],current_edge_data[0]["flow_eq"]["Sink_Neighbors"][0])
-
-                        column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
-                        R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
-
-                        column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
-                        R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
-                    #If there is multiple unique output pressures from multiple outputs
-                    else:
-                        #For each sink neighbor add corresponding equation contribution
+                    #Check if sink of edge was connected to another component other than a output port 
+                    if len(current_edge_data[0]["flow_eq"]["Sink_Neighbors"]) > 1:
+                        print("FILL IN #1")
+                        print("Edge: "+edge[0]+","+edge[1])
+                        print("\n")
+                        P_ids = []
+                        #Loop through neighbors and store corresponding pressure values
                         for neighbor in current_edge_data[0]["flow_eq"]["Sink_Neighbors"]:
                             edge_data = G.get_edge_data(edge[1],neighbor)
+                            P_ids.append(edge_data[0]["pressure"].id)
+                        #Check if there is only 1 unique output pressure from the multiple outputs
+                        if len(set(P_ids)) == 1:
+                            edge_data = G.get_edge_data(edge[1],current_edge_data[0]["flow_eq"]["Sink_Neighbors"][0])
 
                             column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
                             R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
 
                             column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
                             R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
+                        #If there is multiple unique output pressures from multiple outputs
+                        else:
+                            #For each sink neighbor add corresponding equation contribution
+                            for neighbor in current_edge_data[0]["flow_eq"]["Sink_Neighbors"]:
+                                edge_data = G.get_edge_data(edge[1],neighbor)
+
+                                column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
+                                R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
+
+                                column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
+                                R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
+                    
+                    #If sink of edge isn't connected to another component aside from output port do not need to add equation
+                    
+                    ############## INFORMATION FROM NEXT EDGE (NOT INCLUDED FROM CURRENT EDGE) ##############
+                    
+                    #Equation is filled in so move to next row
+                    row = row + 1
                 
-                #If sink of edge isn't connected to another component aside from output port do not need to add equation
-                
-                ############## INFORMATION FROM NEXT EDGE (NOT INCLUDED FROM CURRENT EDGE) ##############
-                
-                #Equation is filled in so move to next row
-                row = row + 1
+                #Already included pressure as part of other equation so keep row the same 
+                else:
+                    row = row 
 
             #Fill in matrices according to characteristics of class 2 equations
             elif(current_edge_data[0]["flow_eq"]["Class"] == 2):
                 print("CLASS 2 ROW: %i" % row)
                 print("Edge: "+edge[0]+","+edge[1])
+                print(current_edge_data[0])
                 print("\n")
 
                 if(current_edge_data[0]["pressure"].id not in P_Solved):
@@ -382,12 +398,23 @@ def solve(multinet,r_data):
                     
                     ############## INFORMATION FROM CURRENT EDGE ##############
 
+                    #NEED MORE FIXING#
+
                     ############## INFORMATION FROM OTHER EDGE ##############
 
+                    #Will also be set off if sink also has another edge connected as an input
                     if len(current_edge_data[0]["flow_eq"]["Sink_Neighbors"]) > 1:
+
                         for neighbor in current_edge_data[0]["flow_eq"]["Sink_Neighbors"]:
                             edge_data = G.get_edge_data(neighbor,edge[1])
+                            #Check if other edge connected to Sink was properly switched to match current edge Pressure value
                             if edge_data[0]["pressure"].id == current_edge_data[0]["pressure"].id:
+                                print("PASSED")
+                                print("edge: ")
+                                print(neighbor+" , "+edge[1])
+                                print("PASSED")
+                                print("\n")
+                                #For each neighbor connected to sink neighbor that contains same pressure value of current edge
                                 for prev_neighbor in edge_data[0]["flow_eq"]["Source_Neighbors"]:
                                     prev_edge_data = G.get_edge_data(prev_neighbor,neighbor)
                                     column = Unknown_P.index(prev_edge_data[0]["flow_eq"]["Positive"].id)
@@ -395,19 +422,36 @@ def solve(multinet,r_data):
 
                                     column = Unknown_P.index(prev_edge_data[0]["flow_eq"]["Negative"].id)
                                     R_Matrix[row,column] = R_Matrix[row,column] + 1/prev_edge_data[0]["flow_eq"]["Resistance"]
+                            elif neighbor != edge[1]:
+                                print("neightbor: %s" % neighbor)
+                                print("\n")
+
                     else:
-                        print("FILL IN #3")
+                        print("DON'T KNOW IF I NEED")
                         print("Edge: "+edge[0]+","+edge[1])
                         print("\n")
 
                     ############## INFORMATION FROM OTHER EDGE ##############
+
+                    #NEED MORE FIXING#
                     
                     ############## INFORMATION FROM PREVIOUS EDGE ##############
 
                     if len(current_edge_data[0]["flow_eq"]["Source_Neighbors"]) > 1:
-                        print("Fill in #4")
-                        print("Edge: "+edge[0]+","+edge[1])
-                        print("\n")
+                        P_ids = []
+                        #Loop through neighbors and store corresponding pressure values
+                        for neighbor in current_edge_data[0]["flow_eq"]["Source_Neighbors"]:
+                            edge_data = G.get_edge_data(neighbor,edge[0])
+                            P_ids.append(edge_data[0]["pressure"].id)
+                        #Check if there is only 1 unique input pressure from the multiple inputs
+                        if len(set(P_ids)) == 1:
+                            edge_data = G.get_edge_data(current_edge_data[0]["flow_eq"]["Source_Neighbors"][0],edge[0])
+                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Positive"].id)
+                            R_Matrix[row,column] = R_Matrix[row,column] - 1/edge_data[0]["flow_eq"]["Resistance"]
+
+                            column = Unknown_P.index(edge_data[0]["flow_eq"]["Negative"].id)
+                            R_Matrix[row,column] = R_Matrix[row,column] + 1/edge_data[0]["flow_eq"]["Resistance"]
+                        #If there is more than 1 unique input presssure
                     else:
                         edge_data = G.get_edge_data(current_edge_data[0]["flow_eq"]["Source_Neighbors"][0],edge[0])
 
@@ -431,6 +475,10 @@ def solve(multinet,r_data):
 #END OF ADJUSTMNETS 
 ###########################################################################################################################################################################
     
+    print("P_Solved: ")
+    print(P_Solved)
+    print("\n")
+
     # counter = 1
     # for edge in edge_list:
     #     print("Edge #%i" % counter)
