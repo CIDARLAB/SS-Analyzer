@@ -1,4 +1,4 @@
-from math import *
+from math import pow, pi
 
 #Initalize variables 
 milli = pow(10,-3)
