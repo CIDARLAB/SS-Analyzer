@@ -1,6 +1,6 @@
-import Mixer_Resistance
-import Channel_Resistance
-from __init__ import Pressure
+from .mixer_resistance import *
+from .channel_resistance import *
+from .pressure import Pressure
 import networkx as nx
 import numpy as np
 import json
