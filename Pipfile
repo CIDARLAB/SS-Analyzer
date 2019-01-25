@@ -12,6 +12,7 @@ igraph = "*"
 numpy = "*"
 networkx = "*"
 argparse = "*"
+matplotlib = "*"
 
 
 [dev-packages]

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6c004b64e1e644e850e89f2ee8911925bfb824aa5cbcb30f878d3bd1491e576c"
+            "sha256": "b271865fff7b9378bb1fc23806466f495a9fc00ebcf3d377c2ab47018699a4ed"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -46,6 +46,10 @@
             "hashes": [],
             "version": "==7.0"
         },
+        "cycler": {
+            "hashes": [],
+            "version": "==0.10.0"
+        },
         "decorator": {
             "hashes": [],
             "version": "==4.3.0"
@@ -78,9 +82,17 @@
             "hashes": [],
             "version": "==2.10"
         },
+        "kiwisolver": {
+            "hashes": [],
+            "version": "==1.0.1"
+        },
         "markupsafe": {
             "hashes": [],
             "version": "==1.1.0"
+        },
+        "matplotlib": {
+            "hashes": [],
+            "version": "==3.0.2"
         },
         "networkx": {
             "hashes": [],
@@ -114,6 +126,14 @@
         "pygments": {
             "hashes": [],
             "version": "==2.3.1"
+        },
+        "pyparsing": {
+            "hashes": [],
+            "version": "==2.3.1"
+        },
+        "python-dateutil": {
+            "hashes": [],
+            "version": "==2.7.5"
         },
         "six": {
             "hashes": [],
