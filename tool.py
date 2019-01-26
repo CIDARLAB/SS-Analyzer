@@ -5,6 +5,7 @@ import argparse
 import json
 from parser import parser
 from solver import solver
+from config import parseConfig
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("design", help="JSON file to Analyze")
@@ -12,8 +13,11 @@ argparser.add_argument("-i","--input", help="Config file")
 
 args = argparser.parse_args()
 
-file = open(args.design, "r")
-JSON = json.loads(file.read())
+file_c = open(args.input, 'r')
+parseConfig(file_c)
+
+file_d = open(args.design, "r")
+JSON = json.loads(file_d.read())
 G = parser.Parse(JSON)
 
 print(G)
@@ -25,7 +29,6 @@ r_data = solver.annotate(G,JSON)
 edge_list = G.edges()
 print(edge_list)
 
-exit()
 
 print("Printing Annotated Data")
 print("\n")

@@ -1,6 +1,7 @@
 from .mixer_resistance import Mixer_R
 from .channel_resistance import Channel_R
 from .pressure import Pressure
+import config
 import networkx as nx
 import numpy as np
 import json
@@ -45,16 +46,16 @@ def annotate(multinet,JSON):
     for edge in edge_list:
         
         current_edge_data = G.get_edge_data(edge[0],edge[1])
-        
+
         if current_edge_data[0]["Port"] == "Sink":
-            #print("Source!")
-            current_edge_data[0]["pressure"] = Pressure(edge[1],101325)
+            #print("Name", config.getPressure(edge[1]))
+            # 101325 is the atmosphereic pressure
+            current_edge_data[0]["pressure"] = Pressure(edge[1],config.getPressure(edge[1]))
             current_edge_data[0]["flow"] = 1
         else:
-            #print("Sink!")
             if current_edge_data[0]["Port"] == "Source":
                 current_edge_data[0]["pressure"] = Pressure(edge[0],None)
-                current_edge_data[0]["flow"] = 2
+                current_edge_data[0]["flow"] = config.getFlowRate(edge[0])
             elif current_edge_data[0]["Port"] == None :
                 current_edge_data[0]["pressure"] = Pressure(edge[0],None)
                 current_edge_data[0]["flow"] = 3
@@ -96,78 +97,78 @@ def solve(multinet,r_data):
         elif(edge[1] in multi_inputs):
             multi_inputs[edge[1]] = multi_inputs[edge[1]] + 1
     
-    #EXPERIMENTAL STUFF
-    ##############################################################################################################
+    # #EXPERIMENTAL STUFF
+    # ##############################################################################################################
 
-    print("\n")
-    print("MULTI OUTPUTS: ")
-    print(multi_outputs)
-    print("\n")
-    print("MULTI INPUTS: ")
-    print(multi_inputs)
-    print("\n")
+    # print("\n")
+    # print("MULTI OUTPUTS: ")
+    # print(multi_outputs)
+    # print("\n")
+    # print("MULTI INPUTS: ")
+    # print(multi_inputs)
+    # print("\n")
 
-    for edge in edge_list:
-        if multi_outputs[edge[0]] > 1:
-            G.node[edge[0]]["Junction"] = True
-    
-    check_edge = []
-    for edge in edge_list:
-        if G.node[edge[0]]["Junction"] == True and edge[0] not in check_edge:
-            check_edge.append(edge[0])
-            for path in nx.all_simple_paths(G, source=edge[0], target="port_out"):
-                #print(path)
-                G.node[edge[0]]["R_Paths"][path[1]] = path
-    
     # for edge in edge_list:
+    #     if multi_outputs[edge[0]] > 1:
+    #         G.node[edge[0]]["Junction"] = True
+    
+    # check_edge = []
+    # for edge in edge_list:
+    #     if G.node[edge[0]]["Junction"] == True and edge[0] not in check_edge:
+    #         check_edge.append(edge[0])
+    #         for path in nx.all_simple_paths(G, source=edge[0], target="port_out"):
+    #             #print(path)
+    #             G.node[edge[0]]["R_Paths"][path[1]] = path
+    
+    # # for edge in edge_list:
+    # #     for path in G.node[edge[0]]["R_Paths"]:
+    # #         for comp in G.node[edge[0]]["R_Paths"][path]:
+    # #             if G.node[edge[0]]["Total_R"] == None:
+    # #                 G.node[edge[0]]["Total_R"] = resistance_data[comp]
+    # #             #STILL NEEDS TO ACCOUNT FOR INSTANCES WHEN IT MEETS UP WITH OTHER JUNCTIONS
+    # #             #elif comp != "port_out":
+    # #             #    if G.node[comp]["Junction"] == True:
+    # #             #        G.node[edge[0]]["Total_R"] = G.node[edge[0]]["Total_R"] + G.node[comp]["Total_R"]
+    # #             else:
+    # #                 G.node[edge[0]]["Total_R"] = G.node[edge[0]]["Total_R"] + resistance_data[comp]
+    
+    
+    # #DOESN'T ACCOUNT FOR OTHER JUNCTIONS DOWNSTREAM
+    # for edge in edge_list:
+    #     R_Sum = 0
     #     for path in G.node[edge[0]]["R_Paths"]:
+    #         #Path is equal to key of path stored under R_Paths
+    #         path_R = 0
+    #         start = 0
     #         for comp in G.node[edge[0]]["R_Paths"][path]:
-    #             if G.node[edge[0]]["Total_R"] == None:
-    #                 G.node[edge[0]]["Total_R"] = resistance_data[comp]
-    #             #STILL NEEDS TO ACCOUNT FOR INSTANCES WHEN IT MEETS UP WITH OTHER JUNCTIONS
-    #             #elif comp != "port_out":
-    #             #    if G.node[comp]["Junction"] == True:
-    #             #        G.node[edge[0]]["Total_R"] = G.node[edge[0]]["Total_R"] + G.node[comp]["Total_R"]
+    #             #Do not include the path's starting resistance 
+    #             if start > 0:
+    #                 #NEEDS TO ACCOUNT FOR OTHER JUNCTIONS THAT LIE POTENTIALLY DOWNSTREAM
+    #                 path_R = path_R + resistance_data[comp]
+    #                 start = start + 1
     #             else:
-    #                 G.node[edge[0]]["Total_R"] = G.node[edge[0]]["Total_R"] + resistance_data[comp]
-    
-    
-    #DOESN'T ACCOUNT FOR OTHER JUNCTIONS DOWNSTREAM
-    for edge in edge_list:
-        R_Sum = 0
-        for path in G.node[edge[0]]["R_Paths"]:
-            #Path is equal to key of path stored under R_Paths
-            path_R = 0
-            start = 0
-            for comp in G.node[edge[0]]["R_Paths"][path]:
-                #Do not include the path's starting resistance 
-                if start > 0:
-                    #NEEDS TO ACCOUNT FOR OTHER JUNCTIONS THAT LIE POTENTIALLY DOWNSTREAM
-                    path_R = path_R + resistance_data[comp]
-                    start = start + 1
-                else:
-                    start = start + 1
-            #Set Path Resistance
-            G.node[edge[0]]["R_Paths_Value"][path] = path_R
-            #Add to total sum 
-            R_Sum = R_Sum + 1/path_R
-        #If there was a junction then calculate the total downstream resistance
-        #using parallel resistor principle 
-        if R_Sum != 0:
-            G.node[edge[0]]["Total_R"] = 1/R_Sum
+    #                 start = start + 1
+    #         #Set Path Resistance
+    #         G.node[edge[0]]["R_Paths_Value"][path] = path_R
+    #         #Add to total sum 
+    #         R_Sum = R_Sum + 1/path_R
+    #     #If there was a junction then calculate the total downstream resistance
+    #     #using parallel resistor principle 
+    #     if R_Sum != 0:
+    #         G.node[edge[0]]["Total_R"] = 1/R_Sum
 
 
 
-    check_edge = []
-    print("Node Data: \n")
-    for edge in edge_list:
-        if edge[0] not in check_edge:
-            check_edge.append(edge[0])
-            print(edge[0])
-            print(G.node[edge[0]])
-            print("\n")
+    # check_edge = []
+    # print("Node Data: \n")
+    # for edge in edge_list:
+    #     if edge[0] not in check_edge:
+    #         check_edge.append(edge[0])
+    #         print(edge[0])
+    #         print(G.node[edge[0]])
+    #         print("\n")
 
-    ##############################################################################################################
+    # ##############################################################################################################
 
     
     #Set up Flow Rate Equations and Flow Rate Values in Edges 
