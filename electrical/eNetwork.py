@@ -13,7 +13,6 @@ class ENetwork:
         if device:
             self.generateFromDevice(device)
             self.annotate()
-            print(self.calculationPoints)
     
     def generateFromDevice(self, device):
         components = device.getComponents()
@@ -37,6 +36,7 @@ class ENetwork:
 
     def getEdgeData(self, edge):
         data = self.G.get_edge_data(edge[0], edge[1])
+        #TODO: Rectify how this implemented so tha we dont have the same issues
         return data[0]['data']
 
 
