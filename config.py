@@ -20,6 +20,9 @@ def setInletOutlet(name, state):
 def getInletOutlet(name):
     return inletOutletDict[name]
 
+def getInletsAndOutlets():
+    return inletOutletDict
+
 def parseConfig(file):
 
     lines = file.read().splitlines()

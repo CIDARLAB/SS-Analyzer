@@ -1,0 +1,4 @@
+IN = "IN"
+OUT = "OUT"
+
+ATM = 101325
