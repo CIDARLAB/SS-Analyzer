@@ -91,7 +91,12 @@ class ENetwork:
     def connectComponentRElements(self, component):
         # print("Component CPoints: ", self.componentCPoints[component.ID])
         cpoints = self.componentCPoints[component.ID]
-        if len(cpoints) > 2:
+        relement = self.rElements[component.ID]
+
+        if len(cpoints) == 2:
+            self.G.add_edge(cpoints[0].id, cpoints[1].id, data=relement)
+
+        else:
             raise Exception('Cannot account for components greater than 2')
         
     
@@ -149,7 +154,7 @@ class ENetwork:
             else:
                 print("Brand new sink calculation point")
                 sink_cpoint = CPoint(cpoint_id)
-                self.internalCalculationPoints[cpoint_id] = source_cpoint
+                self.internalCalculationPoints[cpoint_id] = sink_cpoint
                 self.mapCPointForComponent(sinkref, sink_cpoint)
                 #Now add the CPoint Node to graph
                 self.G.add_node(cpoint_id, data=sink_cpoint)
@@ -157,6 +162,8 @@ class ENetwork:
             #Get the Edge Data (RElement corresponding to (source, sink) pair)
             relement = self.rElements[RElement.getRElementNameForConnection(source, sink)]
             # print("Queried RElement: ", relement)
+            print("Creating Edge for: ", sourceref, sinkref)
+            print("Creating Edge for: ", source_cpoint.id, sink_cpoint.id)
 
             self.G.add_edge(source_cpoint.id, sink_cpoint.id, data=relement)
 
