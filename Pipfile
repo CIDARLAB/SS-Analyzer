@@ -13,11 +13,13 @@ numpy = "*"
 networkx = "*"
 argparse = "*"
 matplotlib = "*"
+graphviz = "*"
 
 
 [dev-packages]
 
 pylint = "*"
+rope = "*"
 
 
 [requires]
