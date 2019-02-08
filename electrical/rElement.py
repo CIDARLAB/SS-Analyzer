@@ -18,6 +18,22 @@ class RElement:
             return relement
 
     @staticmethod
-    def generateRElementFromConnection(connection):
-        relement = RElement(connection.name, 100)
-        return relement
+    def generateRElementsFromConnection(connection):
+        ret = []
+        source = connection.source
+        for sink in connection.sinks:
+            relement = RElement(RElement.getRElementNameForConnection(source, sink), 100)
+            ret.append(relement)
+        return ret
+
+    @staticmethod
+    def getRElementNameForConnection(source, sink):
+        source_port = source.port
+        sink_port = sink.port
+        if source_port == None:
+            source_port = ""
+        if sink_port == None:
+            sink_port = ""
+        return source.component + "_" + source_port + "_" + sink.component + "_" + sink_port
+
+
