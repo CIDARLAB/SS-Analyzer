@@ -1,6 +1,8 @@
+import networkx as nx
+
 from .component import Component
 from .connection import Connection
-import networkx as nx
+
 
 class Device:
 
@@ -56,6 +58,3 @@ class Device:
     
     def __repr__(self):
         return str(self.__dict__)
-
-
-

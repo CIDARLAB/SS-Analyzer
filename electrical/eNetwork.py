@@ -1,8 +1,11 @@
 import networkx as nx
+
 from config import getFlowRate, getInletsAndOutlets, getPressure
-from .rElement import RElement
-from .cPoint import CPoint
+
 from .constants import IN
+from .cPoint import CPoint
+from .rElement import RElement
+
 
 class ENetwork:
 
@@ -169,7 +172,3 @@ class ENetwork:
 
     def getCPoint(self, cpoint_id):
         return self.G.nodes[cpoint_id]["data"]
-
-
-
-    
