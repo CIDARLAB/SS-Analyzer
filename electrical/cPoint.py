@@ -16,5 +16,8 @@ class CPoint:
 
     @staticmethod
     def generateCPointNameFromTarget(target):
-        return target.component+"_"+target.port
+        target_port = target.port
+        if target_port == None:
+            target_port = ""
+        return target.component + "_" + target_port
 
