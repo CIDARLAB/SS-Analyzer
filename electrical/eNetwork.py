@@ -10,7 +10,7 @@ from .rElement import RElement
 class ENetwork:
 
     def __init__(self, device):
-        self.G = nx.MultiGraph()
+        self.G = nx.DiGraph()
         self.iocalculationPoints = dict()
         self.internalCalculationPoints = dict()
         self.flowRateIOComponents = []
