@@ -1,5 +1,6 @@
 from .component import Component
 from .connection import Connection
+import networkx as nx
 
 class Device:
 
@@ -10,9 +11,10 @@ class Device:
         self.layers = []
         self.params = dict()
         self.features = [] # Store Raw JSON Objects for now
-
+        self.G = nx.MultiGraph()
         if json:
             self.parseFromJSON(json)
+            self.generateNetwork()
     
 
     def addComponent(self, component):
@@ -38,6 +40,16 @@ class Device:
     
     def getConnections(self):
         return self.connections
+
+    def generateNetwork(self):
+        for component in self.components:
+            self.G.add_node(component.ID)
+        
+        for connection in self.connections:
+            sourceref = connection.source.component
+            for sink in connection.sinks:
+                sinkref = sink.component
+                self.G.add_edge(sourceref, sinkref, source_port=connection.source, sink_port=sink)
 
     def __str__(self):
         return str(self.__dict__)
