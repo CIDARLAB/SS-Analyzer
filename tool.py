@@ -1,11 +1,13 @@
-#!flask/bin/python
+#!/usr/bin/python
 
-import sys
 import argparse
 import json
-from parser import parser
-from solver import solver
+import sys
+
 from config import parseConfig
+from electrical.eNetwork import ENetwork
+from parchmint.device import Device
+from solver.newSolver import NewSolver
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("design", help="JSON file to Analyze")
@@ -16,39 +18,25 @@ args = argparser.parse_args()
 file_c = open(args.input, 'r')
 parseConfig(file_c)
 
-file_d = open(args.design, "r")
+file_d = open(args.design, 'r')
 JSON = json.loads(file_d.read())
-G = parser.Parse(JSON)
 
-print(G)
+device = Device(JSON)
 
-edge_list = G.edges()
+electrical_network = ENetwork(device)
 
-r_data = solver.annotate(G,JSON)
-
-edge_list = G.edges()
-print(edge_list)
+# print("Printing the Electical Network's edges:")
+# for edge in electrical_network.G.edges():  
+#     print("Printing Edge :", edge, electrical_network.getEdgeData(edge))
 
 
-print("Printing Annotated Data")
-print("\n")
+solver = NewSolver()
+solver.initialize(electrical_network)
+solver.solve()
 
-for edge in edge_list:
-    current_edge = G.get_edge_data(edge[0],edge[1])
-    print(edge) 
-    print(current_edge)
-    print("\n")
-
-solver.solve(G,r_data)
-
-
-print("Printing Solved Data")
-print("\n")
-
-for edge in edge_list:
-    current_edge = G.get_edge_data(edge[0],edge[1])
-    print(current_edge)
-    print("\n")
+print("Final Results")
+for cpoint in electrical_network.getAllCPoints():
+    print("Node: ", cpoint.id, " Pressure: ", cpoint.pressure)
 
 
 

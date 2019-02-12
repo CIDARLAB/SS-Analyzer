@@ -123,9 +123,6 @@ class FlowEquation:
                 ret.constantterm += neighbor.pressure/R
                 ret.multiplier += 1/R
 
-
-
-
         print("Flow Equation: ", ret)
         return ret
 

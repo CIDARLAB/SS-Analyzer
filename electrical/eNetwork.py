@@ -177,3 +177,10 @@ class ENetwork:
         data = self.G.get_edge_data(source_id, sink_id)
         return data['data'].resistance
 
+    def updatePressure(self, cpoint_id, value):
+        cpoint = self.getCPoint(cpoint_id)
+        cpoint.pressure = value
+
+    def getAllCPoints(self):
+        ret = [self.getCPoint(node) for node in self.G.nodes()]
+        return ret
