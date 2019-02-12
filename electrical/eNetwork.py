@@ -24,7 +24,7 @@ class ENetwork:
             self.generateFromDevice(device)
             print("Annotating the Electical Network from Config Data")
             self.annotate()
-            print(self.iocalculationPoints)
+            # print(self.iocalculationPoints)
     
     def generateFromDevice(self, device):
         self.device = device
@@ -67,13 +67,13 @@ class ENetwork:
     def getEdgeData(self, edge):
         data = self.G.get_edge_data(edge[0], edge[1])
         #TODO: Rectify how this implemented so tha we dont have the same issues
-        return data[0]['data']
+        return data['data']
 
     def updateState(self, name, state):
         for vertex in self.G.nodes():
             if vertex == name:
                 cpoint = self.getCPoint(name)
-                print("Found cpoint:.....", name, cpoint)
+                # print("Found cpoint:.....", name, cpoint)
                 if IN == state:
                     cpoint.flowrate = getFlowRate(name)
                 else:
@@ -172,3 +172,8 @@ class ENetwork:
 
     def getCPoint(self, cpoint_id):
         return self.G.nodes[cpoint_id]["data"]
+
+    def getResistanceBetween(self, source_id, sink_id):
+        data = self.G.get_edge_data(source_id, sink_id)
+        return data['data'].resistance
+
