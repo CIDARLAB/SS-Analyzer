@@ -114,9 +114,15 @@ class FlowEquation:
         for key in neighbors:
             neighbor = enetwork.getCPoint(key)
 
-            R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
-            ret.neighbourterms[neighbor.id] = -1/R
-            ret.multiplier += 1/R
+            if neighbor.pressure == None:
+                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                ret.neighbourterms[neighbor.id] = -1/R
+                ret.multiplier += 1/R
+            else:
+                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                ret.constantterm += neighbor.pressure/R
+                ret.multiplier += 1/R
+
 
 
 
