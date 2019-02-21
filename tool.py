@@ -41,7 +41,13 @@ solver.solve()
 
 print("Final Results")
 for cpoint in electrical_network.getAllCPoints():
-    print("Node: ", cpoint.id, " Pressure: ", cpoint.pressure)
+    parts = cpoint.id.split("_")
+    nodename = device.getNameForID(parts[0])
+
+    if len(parts) > 1:
+        nodename = device.getNameForID(parts[0]) + "_" + parts[1]
+        
+    print("Node: ", nodename, " Pressure: ", cpoint.pressure)
 
 
 
