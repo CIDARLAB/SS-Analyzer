@@ -13,7 +13,6 @@ class Params:
         for key, value in json.items():
             self.data[key] = value
 
-
     def __str__(self):
             return str(self.__dict__)
 

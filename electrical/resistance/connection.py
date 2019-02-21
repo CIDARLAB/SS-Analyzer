@@ -1,14 +1,29 @@
-import sys
+from math import pow, sqrt, tanh, pi
 
-sys.path.insert(0, "/Users/dylansamperi/Desktop/uF_Modeling_Tool/Software/SS-Analyzer/Solver")
-sys.setrecursionlimit(300000)
+from .constants import MICRONS, WATER_VISCOSITY
 
-from Channel_Resistance import Channel_R
-from math import *
+def pointDist(pointA, pointB):
+    return sqrt(pow(pointA[0] - pointB[0], 2) + pow(pointA[1] - pointB[1], 2))
 
-######################################
-#ERROR WITH BENDLENGTH BEING NEGATIVE#
-######################################
+
+def connection_R(params):
+    width = float(params["channelWidth"])
+    depth = float(params["height"])
+    length = 0
+    for segment in params['segments']:
+        pointA = segment[0]
+        pointB = segment[1]
+
+        length = length + pointDist(pointA, pointB)
+    
+    width = width * MICRONS
+    depth = depth * MICRONS
+    length = length * MICRONS
+
+    alpha = 12*pow(1-((192*depth)/(pow(pi,5)*width))*tanh((pi*width)/(2*depth)),-1)
+    resistance = (alpha*WATER_VISCOSITY*length)/(width*pow(depth,3))
+
+    return resistance
 
 def Dimension_Adjustment(length,bendSpacing,numberOfBends,bendLength,Calc_length):
     
@@ -128,6 +143,7 @@ def Channel_Mod(R_Val,C_Width,C_Depth,Desired_R):
         params = Dimension_Adjustment(length,bendSpacing,0,0,0)
         print(params)
 
-original_R = pow(10,3)
-new_R = pow(10,11)
-Channel_Mod(original_R,400,400,new_R)
+
+
+    
+    

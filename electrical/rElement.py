@@ -1,3 +1,5 @@
+from .resistance import rModel as RModel
+
 class RElement:
 
     def __init__(self, id, resistance):
@@ -14,7 +16,8 @@ class RElement:
 
     @staticmethod
     def generateRElementFromComponent(component):
-            relement = RElement(component.ID, 100)
+            R = RModel.computeComponentResistance(component)
+            relement = RElement(component.ID, R)
             return relement
 
     @staticmethod
@@ -22,7 +25,10 @@ class RElement:
         ret = []
         source = connection.source
         for sink in connection.sinks:
-            relement = RElement(RElement.getRElementNameForConnection(source, sink), 100)
+            print(connection.params.data)
+            R = RModel.computeConnectionResistance(connection)
+            print("resistance: ", R)
+            relement = RElement(RElement.getRElementNameForConnection(source, sink), R)
             ret.append(relement)
         return ret
 

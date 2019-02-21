@@ -6,6 +6,7 @@ class Component:
         self.name = None
         self.ID = None
         self.params = dict()
+        self.entity = None
 
         if json:
             self.parseFromJSON(json)
@@ -15,6 +16,7 @@ class Component:
     def parseFromJSON(self, json):
         self.name = json["name"]
         self.ID = json["id"]
+        self.entity = json["entity"]
 
         self.params = Params(json["params"])
 
