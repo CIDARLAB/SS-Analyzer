@@ -1,0 +1,2 @@
+WATER_VISCOSITY = 8.9*pow(10,-4)
+MICRONS = pow(10,-6)

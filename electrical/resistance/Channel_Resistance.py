@@ -6,7 +6,7 @@ W_viscosity = 8.9*pow(10,-4)
 micro = pow(10,-6)
 
 #include depth input after JSON fixed
-def Channel_R(channelWidth,depth):
+def Channel_R(params):
 
 
     width = float(channelWidth)

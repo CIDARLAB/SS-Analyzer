@@ -1,9 +1,9 @@
 from math import *
 
 #Initalize variables 
-W_viscosity = 8.9*pow(10,-4)
+WATER_VISCOSITY = 8.9*pow(10,-4)
 #milli = pow(10,-3)
-micro = pow(10,-6)
+MICRONS = pow(10,-6)
 
 '''
 bendSpacing = input("Insert bendSpacing: ")
@@ -29,12 +29,12 @@ def Mixer_R(bendSpacing,numberOfBends,channelWidth,bendLength):
 
     length = numberOfBends * ((2*bendLength) + (2*bendSpacing))
 
-    width = width*micro
-    depth = depth*micro
-    length = length*micro
+    width = width*MICRONS
+    depth = depth*MICRONS
+    length = length*MICRONS
 
     alpha = 12*pow(1-((192*depth)/(pow(pi,5)*width))*tanh((pi*width)/(2*depth)),-1)
-    resistance = (alpha*W_viscosity*length)/(width*pow(depth,3))
+    resistance = (alpha*WATER_VISCOSITY*length)/(width*pow(depth,3))
 
     return resistance
 
