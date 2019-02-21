@@ -3,12 +3,14 @@ flowrateDict = dict()
 inletOutletDict = dict()
 
 def setPressure(name, pressure):
+    print("Setting pressure", name, pressure)
     pressureDict[name] = pressure
 
 def getPressure(name):
     return pressureDict[name]
 
 def setFlowRate(name, flowrate):
+    print("Setting pressure", name, flowrate)
     flowrateDict[name] = flowrate
 
 def getFlowRate(name):
@@ -28,6 +30,7 @@ def getIDForName(name, device):
     for component in components:
         if component.name == name:
             return component.ID
+    raise Exception("Could not find component with name in config:", name)
 
 def parseConfig(file, device):
 
@@ -39,7 +42,7 @@ def parseConfig(file, device):
         id = getIDForName(name, device)
         state = parts[1].strip()
         value = parts[2].strip()
-        setInletOutlet(name, state)
+        setInletOutlet(id, state)
         if state == "IN":
             setFlowRate(id, float(value))
         elif state == "OUT":

@@ -53,6 +53,11 @@ class Device:
                 sinkref = sink.component
                 self.G.add_edge(sourceref, sinkref, source_port=connection.source, sink_port=sink)
 
+    def getNameForID(self, id):
+        for component in self.components:
+            if component.ID == id:
+                return component.name
+    
     def __str__(self):
         return str(self.__dict__)
     

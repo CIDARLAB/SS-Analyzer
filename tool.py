@@ -30,9 +30,9 @@ for edge in device.G.edges():
 
 electrical_network = ENetwork(device)
 
-# print("Printing the Electical Network's edges:")
-# for edge in electrical_network.G.edges():  
-#     print("Printing Edge :", edge, electrical_network.getEdgeData(edge))
+print("Printing the Electical Network's edges:")
+for edge in electrical_network.G.edges():  
+    print("Printing Edge :", edge, electrical_network.getEdgeData(edge))
 
 
 solver = NewSolver()

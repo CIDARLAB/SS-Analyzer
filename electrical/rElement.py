@@ -14,7 +14,7 @@ class RElement:
 
     @staticmethod
     def generateRElementFromComponent(component):
-            relement = RElement(component.name, 100)
+            relement = RElement(component.ID, 100)
             return relement
 
     @staticmethod

@@ -37,6 +37,7 @@ class ENetwork:
             if self.isInletOutlet(component):
                 self.flowRateIOComponents.append(component)
             else:
+                print("Creating R Element for component: ", component.name)
                 relement = RElement.generateRElementFromComponent(component)
                 self.rElements[relement.id] = relement
 
@@ -80,6 +81,7 @@ class ENetwork:
                     cpoint.pressure = getPressure(name)
     
     def isInletOutlet(self, component):
+        print("inout data:", self.inoutdata)
         for key in self.inoutdata:
             if key == component.ID:
                 return True
