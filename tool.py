@@ -7,7 +7,7 @@ import sys
 from config import parseConfig
 from electrical.eNetwork import ENetwork
 from parchmint.device import Device
-from solver.newSolver import NewSolver
+from solver.solver import Solver
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("design", help="JSON file to Analyze")
@@ -35,7 +35,7 @@ for edge in electrical_network.G.edges():
     print("Printing Edge :", edge, electrical_network.getEdgeData(edge))
 
 
-solver = NewSolver()
+solver = Solver()
 solver.initialize(electrical_network)
 solver.solve()
 
