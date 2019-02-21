@@ -1,5 +1,5 @@
 from math import pow, pi, tanh
-from .constants import MICRONS, WATER_VISCOSITY
+from electrical.resistance.constants import MICRONS, WATER_VISCOSITY
 
 def mixer_R(params):
 

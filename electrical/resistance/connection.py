@@ -1,6 +1,6 @@
 from math import pow, sqrt, tanh, pi
 
-from .constants import MICRONS, WATER_VISCOSITY
+from electrical.resistance.constants import MICRONS, WATER_VISCOSITY
 
 def pointDist(pointA, pointB):
     return sqrt(pow(pointA[0] - pointB[0], 2) + pow(pointA[1] - pointB[1], 2))

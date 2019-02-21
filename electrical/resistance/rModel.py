@@ -1,5 +1,5 @@
-from .connection import connection_R
-from .mixer import mixer_R
+from electrical.resistance.connection import connection_R
+from electrical.resistance.mixer import mixer_R
 
 def computeConnectionResistance(connection):
     if "segments" in connection.params.data:
