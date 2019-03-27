@@ -6,7 +6,7 @@ import sys
 
 from config import parseConfig
 from electrical.eNetwork import ENetwork
-from parchmint.device import Device
+from pyparchmint.device import Device
 from solver.solver import Solver
 
 argparser = argparse.ArgumentParser()
