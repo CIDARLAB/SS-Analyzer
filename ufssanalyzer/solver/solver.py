@@ -1,3 +1,5 @@
+from typing import List, Optional
+from ufssanalyzer.electrical.eNetwork import ENetwork
 import numpy as np
 
 from ufssanalyzer.solver.flowEquation import FlowEquation
@@ -5,10 +7,10 @@ from ufssanalyzer.solver.flowEquation import FlowEquation
 
 class Solver:
     def __init__(self):
-        self.flowRateEquations = []
-        self.eNetwork = None
+        self.flowRateEquations: List[FlowEquation] = []
+        self.eNetwork: Optional[ENetwork] = None
 
-    def initialize(self, enetwork):
+    def initialize(self, enetwork: ENetwork) -> None:
         # Setup Flow Equations for each of the calculation points
         # print(enetwork.iocalculationPoints)
         # print(enetwork.internalCalculationPoints)
@@ -32,7 +34,7 @@ class Solver:
                 equation = FlowEquation.constructFlowEquation(enetwork, cpoint)
                 self.flowRateEquations.append(equation)
 
-    def solve(self):
+    def solve(self) -> None:
         # Setup the Matrices for the Solver
         # Run through each of the equations and start setting up the matrices
         # A Matrix in AX = B

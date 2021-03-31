@@ -7,7 +7,7 @@ import sys
 from config import parseConfig
 from ufssanalyzer.electrical.eNetwork import ENetwork
 from parchmint.device import Device
-from solver.solver import Solver
+from ufssanalyzer.solver.solver import Solver
 
 
 def solve_network():
@@ -43,9 +43,9 @@ def solve_network():
     print("Final Results")
     for cpoint in electrical_network.getAllCPoints():
         parts = cpoint.id.split("_")
-        nodename = device.getNameForID(parts[0])
+        nodename = device.get_component(parts[0]).name
 
         if len(parts) > 1:
-            nodename = device.getNameForID(parts[0]) + "_" + parts[1]
+            nodename = device.get_component(parts[0]).name + "_" + parts[1]
 
         print("Node: ", nodename, " Pressure: ", cpoint.pressure)

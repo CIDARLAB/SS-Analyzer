@@ -1,18 +1,22 @@
+from typing import Dict, List
 import networkx as nx
+from parchmint.component import Component
+from parchmint.connection import Connection
 
 from config import getFlowRate, getInletsAndOutlets, getPressure
 
 from ufssanalyzer.electrical.constants import IN
 from ufssanalyzer.electrical.cPoint import CPoint
 from ufssanalyzer.electrical.rElement import RElement
+from parchmint import Device
 
 
 class ENetwork:
-    def __init__(self, device):
+    def __init__(self, device: Device):
         self.G = nx.Graph()
-        self.iocalculationPoints = dict()
-        self.internalCalculationPoints = dict()
-        self.flowRateIOComponents = []
+        self.iocalculationPoints: Dict[str, CPoint] = dict()
+        self.internalCalculationPoints: Dict[str, CPoint] = dict()
+        self.flowRateIOComponents: List[Component] = []
         self.rElements = dict()
         self.componentCPoints = dict()
 
@@ -25,10 +29,10 @@ class ENetwork:
             self.annotate()
             # print(self.iocalculationPoints)
 
-    def generateFromDevice(self, device):
+    def generateFromDevice(self, device: Device) -> None:
         self.device = device
-        components = device.getComponents()
-        connections = device.getConnections()
+        components = device.get_components()
+        connections = device.get_connections()
 
         # Generate all the RElements which will eventually become the edges
         # Add components as nodes
@@ -70,7 +74,7 @@ class ENetwork:
         return data["data"]
 
     def updateState(self, name, state):
-        for vertex in self.G.nodes():
+        for vertex in self.G.nodes:
             if vertex == name:
                 cpoint = self.getCPoint(name)
                 # print("Found cpoint:.....", name, cpoint)
@@ -79,7 +83,7 @@ class ENetwork:
                 else:
                     cpoint.pressure = getPressure(name)
 
-    def isInletOutlet(self, component):
+    def isInletOutlet(self, component: Component) -> bool:
         print("inout data:", self.inoutdata)
         for key in self.inoutdata:
             if key == component.ID:
@@ -87,12 +91,12 @@ class ENetwork:
 
         return False
 
-    def annotate(self):
+    def annotate(self) -> None:
         for key in self.inoutdata:
             print("Annotating Config entry: ", key)
             self.updateState(key, self.inoutdata[key])
 
-    def connectComponentRElements(self, component):
+    def connectComponentRElements(self, component: Component) -> None:
         # print("Component CPoints: ", self.componentCPoints[component.ID])
         cpoints = self.componentCPoints[component.ID]
         relement = self.rElements[component.ID]
@@ -103,7 +107,7 @@ class ENetwork:
         else:
             raise Exception("Cannot account for components greater than 2")
 
-    def mapCPointForComponent(self, componentname, cpoint):
+    def mapCPointForComponent(self, componentname: str, cpoint: CPoint) -> None:
         # print("mapCPointForComponent - component name: ", componentname)
         array = None
         if componentname in self.componentCPoints:
@@ -115,7 +119,7 @@ class ENetwork:
         self.componentCPoints[componentname] = array
         # print("CPOINT MAP: ", self.componentCPoints.keys())
 
-    def addConnectionCalculationPoints(self, connection):
+    def addConnectionCalculationPoints(self, connection: Connection) -> None:
         # Get the connection source and sink, if its a inlet outlet, get the corresponding CPoint
         source = connection.source
         sourceref = source.component
@@ -125,7 +129,7 @@ class ENetwork:
         for sink in connection.sinks:
             sinkref = sink.component
             sink_cpoint = None
-
+            assert source is not None
             cpoint_id = CPoint.generateCPointNameFromTarget(source)
 
             if sourceref in self.iocalculationPoints:
@@ -170,17 +174,17 @@ class ENetwork:
 
             self.G.add_edge(source_cpoint.id, sink_cpoint.id, data=relement)
 
-    def getCPoint(self, cpoint_id):
+    def getCPoint(self, cpoint_id: str) -> CPoint:
         return self.G.nodes[cpoint_id]["data"]
 
-    def getResistanceBetween(self, source_id, sink_id):
+    def getResistanceBetween(self, source_id: str, sink_id: str) -> float:
         data = self.G.get_edge_data(source_id, sink_id)
         return data["data"].resistance
 
-    def updatePressure(self, cpoint_id, value):
+    def updatePressure(self, cpoint_id: str, value: float) -> None:
         cpoint = self.getCPoint(cpoint_id)
         cpoint.pressure = value
 
-    def getAllCPoints(self):
-        ret = [self.getCPoint(node) for node in self.G.nodes()]
+    def getAllCPoints(self) -> List[CPoint]:
+        ret = [self.getCPoint(node) for node in self.G.nodes]
         return ret
