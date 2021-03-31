@@ -1,24 +1,23 @@
-from .resistance import rModel as RModel
+from ufssanalyzer.electrical.resistance import rModel as RModel
+
 
 class RElement:
-
     def __init__(self, id, resistance):
         self.id = id
         self.resistance = resistance
         self.state = None
 
-
     def __str__(self):
         return str(self.__dict__)
-    
+
     def __repr__(self):
         return str(self.__dict__)
 
     @staticmethod
     def generateRElementFromComponent(component):
-            R = RModel.computeComponentResistance(component)
-            relement = RElement(component.ID, R)
-            return relement
+        R = RModel.computeComponentResistance(component)
+        relement = RElement(component.ID, R)
+        return relement
 
     @staticmethod
     def generateRElementsFromConnection(connection):
@@ -40,6 +39,12 @@ class RElement:
             source_port = ""
         if sink_port == None:
             sink_port = ""
-        return source.component + "_" + source_port + "_" + sink.component + "_" + sink_port
-
-
+        return (
+            source.component
+            + "_"
+            + source_port
+            + "_"
+            + sink.component
+            + "_"
+            + sink_port
+        )

@@ -6,7 +6,7 @@ SS-Analyzer (State Space Analyzer) is a tool that allows the user to process a m
 
 ### Dependencies
 
-In order to use SS-Analyzer, Python 3.6.3 or greater is required to be installed on the computer. The analyzer also uses the following packages as dependencies. `flask`, `numpy`, `networkx`, `argparse`. The project uses `pipenv` to simplify the dependency management. 
+In order to use SS-Analyzer, Python 3.8 or greater is required to be installed on the computer. The analyzer also uses `poetry` to manage the dependencies.
 
 ### pipenv based installation
 
@@ -42,7 +42,7 @@ Where each line corresponds follows the below format :
 
 ### Command Line Interface
 ```
-usage: tool.py [-h] [-i INPUT] design
+usage: solve-network [-h] [-i INPUT] design
 ```
 
 ```
@@ -62,5 +62,5 @@ The demonstration design file and config file are available with the v0.1 releas
 
 BSD 2-Clause License
 
-Copyright (c) 2019, CIDAR LAB
+Copyright (c) 2021, CIDAR LAB
 All rights reserved.

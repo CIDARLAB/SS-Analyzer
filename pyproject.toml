@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "ufssanalyzer"
+version = "0.1.0"
+description = "S-Analyzer (State Space Analyzer) is a tool that allows the user to process a microfluidic design described that conforms to the ParchMint ([http://parchmint.org](http://parchmint.org)) standard to be be analyzed for Pressure and Flow Rate data. In this demonstration version of SS-Analyzer, the tool can only work with 1-1 `CONNECTION` and `MIXER` object used by 3DµF ([http://3duf.org](http://3duf.org)). Future versions of SS-Analyzer will be extended to support more component definitions and be able to complex connectivity."
+authors = ["Radhakrishna Sanka <rkrishnasanka@gmail.com>"]
+license = "BSD-2 Clause"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+parchmint = "^0.2.6"
+numpy = "^1.20.2"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.4"
+black = "^20.8b1"
+mypy = "^0.790"
+rope = "^0.18.0"
+Sphinx = "^3.4.3"
+sphinx-rtd-theme = "^0.5.1"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+solve-network = "solver.tool:solve_network"
+
+[tool.poetry.extras]
+docs = ["sphinx"]
