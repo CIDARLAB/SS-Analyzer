@@ -24,7 +24,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-solve-network = "solver.tool:solve_network"
+solve-network = "tool:solve_network"
 
 [tool.poetry.extras]
 docs = ["sphinx"]

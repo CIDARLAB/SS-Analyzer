@@ -10,7 +10,7 @@ class CPoint:
         [type] -- [description]
     """
 
-    def __init__(self, id: str):
+    def __init__(self, id: str, target: Optional[Target]):
         """[summary]
 
         Arguments:
@@ -19,7 +19,9 @@ class CPoint:
         self.id = id
         self.pressure: Optional[float] = None
         self.flowrate: Optional[float] = None
-        self.state = None
+        # TODO - Change this to enum associated with known pressure and known flowrate
+        self.state: str = None
+        self._target_ref: Optional[Target] = target
 
     def __str__(self):
         return str(self.__dict__)
@@ -28,7 +30,7 @@ class CPoint:
         return str(self.__dict__)
 
     @staticmethod
-    def generateCPointNameFromTarget(target: Target) -> str:
+    def generate_CPoint_name_from_target(target: Target) -> str:
         """Generates the identifier that has follows the required cpoint convention
 
         Arguments:

@@ -12,7 +12,7 @@ def setPressure(name: str, pressure: float) -> None:
     pressureDict[name] = pressure
 
 
-def getPressure(name: str) -> float:
+def get_pressure(name: str) -> float:
     return pressureDict[name]
 
 
@@ -21,7 +21,7 @@ def setFlowRate(name: str, flowrate: float) -> None:
     flowrateDict[name] = flowrate
 
 
-def getFlowRate(name: str) -> float:
+def get_flow_rate(name: str) -> float:
     return flowrateDict[name]
 
 
@@ -33,7 +33,7 @@ def getInletOutlet(name: str) -> str:
     return inletOutletDict[name]
 
 
-def getInletsAndOutlets() -> Dict[str, str]:
+def get_inlets_outlets() -> Dict[str, str]:
     return inletOutletDict
 
 

@@ -11,6 +11,8 @@ from ufssanalyzer.solver.solver import Solver
 
 
 def solve_network():
+    """CLI interface method for solver"""
+
     argparser = argparse.ArgumentParser()
     argparser.add_argument("design", help="JSON file to Analyze")
     argparser.add_argument("-i", "--input", help="Config file")
@@ -34,7 +36,7 @@ def solve_network():
 
     print("Printing the Electical Network's edges:")
     for edge in electrical_network.G.edges():
-        print("Printing Edge :", edge, electrical_network.getEdgeData(edge))
+        print("Printing Edge :", edge, electrical_network.get_edge_data(edge))
 
     solver = Solver()
     solver.initialize(electrical_network)
@@ -49,3 +51,8 @@ def solve_network():
             nodename = device.get_component(parts[0]).name + "_" + parts[1]
 
         print("Node: ", nodename, " Pressure: ", cpoint.pressure)
+
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    solve_network()

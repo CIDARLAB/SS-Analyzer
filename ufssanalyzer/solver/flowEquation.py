@@ -29,7 +29,7 @@ class FlowEquation:
         # Examine the neighbours to see if it has a known input or an output
         neighbors = enetwork.G.neighbors(cpoint.id)
         for key in neighbors:
-            neighbor = enetwork.getCPoint(key)
+            neighbor = enetwork.get_cpoint(key)
             # print( "n- ", key, cpoint)
 
             # if neighbour is output classify as type 3. this means that it has a known pressure
@@ -59,7 +59,7 @@ class FlowEquation:
         # print("neighbours of ", cpoint.id)
 
         for key in neighbors:
-            neighbor = enetwork.getCPoint(key)
+            neighbor = enetwork.get_cpoint(key)
 
             # if neighbour is input
             if neighbor.flowrate != None and neighbor.pressure == None:
@@ -67,7 +67,7 @@ class FlowEquation:
                 ret.constantterm += neighbor.flowrate
 
             elif neighbor.flowrate == None and neighbor.pressure != None:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.neighbourterms[neighbor.id] = -1 / R
                 ret.constantterm += 1 / R
 
@@ -76,7 +76,7 @@ class FlowEquation:
                 raise Exception("Don't know how to handle this situation")
 
             else:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.neighbourterms[neighbor.id] = -1 / R
                 ret.multiplier += 1 / R
 
@@ -94,14 +94,14 @@ class FlowEquation:
         # print("neighbours of ", cpoint.id)
 
         for key in neighbors:
-            neighbor = enetwork.getCPoint(key)
+            neighbor = enetwork.get_cpoint(key)
 
             if neighbor.pressure == None:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.neighbourterms[neighbor.id] = -1 / R
                 ret.multiplier += 1 / R
             else:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.constantterm += neighbor.pressure / R
                 ret.multiplier += 1 / R
 
@@ -116,14 +116,14 @@ class FlowEquation:
         neighbors = enetwork.G.neighbors(cpoint.id)
 
         for key in neighbors:
-            neighbor = enetwork.getCPoint(key)
+            neighbor = enetwork.get_cpoint(key)
 
             if neighbor.pressure == None:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.neighbourterms[neighbor.id] = -1 / R
                 ret.multiplier += 1 / R
             else:
-                R = enetwork.getResistanceBetween(cpoint.id, neighbor.id)
+                R = enetwork.get_resistance_between(cpoint.id, neighbor.id)
                 ret.constantterm += neighbor.pressure / R
                 ret.multiplier += 1 / R
 

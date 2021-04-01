@@ -1,9 +1,10 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import networkx as nx
 from parchmint.component import Component
 from parchmint.connection import Connection
+from parchmint.target import Target
 
-from ufssanalyzer.config import getFlowRate, getInletsAndOutlets, getPressure
+from ufssanalyzer.config import get_flow_rate, get_inlets_outlets, get_pressure
 
 from ufssanalyzer.electrical.constants import IN
 from ufssanalyzer.electrical.cPoint import CPoint
@@ -14,22 +15,42 @@ from parchmint import Device
 class ENetwork:
     def __init__(self, device: Device):
         self.G = nx.Graph()
-        self.iocalculationPoints: Dict[str, CPoint] = dict()
-        self.internalCalculationPoints: Dict[str, CPoint] = dict()
+
+        # TODO - Figure out how much the io vs internal calcuation points
+        # is preventing us for calculating internal uknowns
+
+        # Calculation points associated with the input / output components
+        # (Since they're typically just one of them)
+        self.io_calculation_points: Dict[str, CPoint] = dict()
+
+        # Calculation points associated with the rest of the network
+        self.internal_calculation_points: Dict[str, CPoint] = dict()
         self.flowRateIOComponents: List[Component] = []
         self.rElements = dict()
-        self.componentCPoints = dict()
+        self.component_CPoints = dict()
 
-        self.inoutdata = getInletsAndOutlets()
+        self.inoutdata = get_inlets_outlets()
 
         if device:
             print("Generating Electical Network from Microfluidic Network")
-            self.generateFromDevice(device)
+            self.generate_from_device(device)
             print("Annotating the Electical Network from Config Data")
-            self.annotate()
+            self.__annotate()
             # print(self.iocalculationPoints)
 
-    def generateFromDevice(self, device: Device) -> None:
+    def generate_from_device(self, device: Device) -> None:
+        """Generates the ENetwork from the given device and enables the representation
+        of the design as an electrical network model.
+
+        1. Goes through all the components and creates the RElements
+        2. Goes through all the connections and creates the RElements
+        3. Generates Calculation Points for all the inlets and outlets
+        4. Loop through the connects at each location where a connection connects to a component
+        5. Makes connections between the RElement in a single component
+
+        Args:
+            device (Device): The device from which we generate the electrical network
+        """
         self.device = device
         components = device.get_components()
         connections = device.get_connections()
@@ -37,14 +58,14 @@ class ENetwork:
         # Generate all the RElements which will eventually become the edges
         # Add components as nodes
         for component in components:
-            if self.isInletOutlet(component):
+            if self.is_inlet_outlet(component):
                 self.flowRateIOComponents.append(component)
             else:
                 print("Creating R Element for component: ", component.name)
-                relement = RElement.generateRElementFromComponent(component)
+                relement = RElement.generate_relement_from_component(component)
                 self.rElements[relement.id] = relement
 
-        # Add connections as nodes
+        # Generate all the rlements for the connections
         for connection in connections:
             relements = RElement.generateRElementsFromConnection(connection)
 
@@ -54,36 +75,66 @@ class ENetwork:
 
         # Generate calculation points for all the inlets and outlets
         for component in self.flowRateIOComponents:
-            cpoint = CPoint(component.ID)
-            self.iocalculationPoints[cpoint.id] = cpoint
+            # TODO - Remove the assumption that IO components only have 1,
+            # Also figure out how to genrate targets here
+            cpoint = CPoint(component.ID, None)
+            self.io_calculation_points[cpoint.id] = cpoint
             self.G.add_node(cpoint.id, data=cpoint)
 
         # Loop through all the connections again to generate the ENetworkGraph
         # them as edges in the graph while making all the additional calculationpoints
         for connection in connections:
-            self.addConnectionCalculationPoints(connection)
+            self._add_connection_calculation_points(connection)
 
-        # Now create all component based connections
+        # Now connect all Relements of individual components
         for component in components:
-            if not self.isInletOutlet(component):
-                self.connectComponentRElements(component)
+            if not self.is_inlet_outlet(component):
+                self.connect_component_relements(component)
 
-    def getEdgeData(self, edge):
+    def get_edge_data(self, edge: Tuple[str, str]):
+        """Get data stored on the edge dictionary
+
+
+        Args:
+            edge (Tuple[str, str]): ENetwork edge we want to get the data for
+
+        Returns:
+            [type]: TBA
+        """
         data = self.G.get_edge_data(edge[0], edge[1])
         # TODO: Rectify how this implemented so tha we dont have the same issues
         return data["data"]
 
-    def updateState(self, name, state):
+    def update_state(self, id: str, state: str):
+        """Updates the state of the ENetowkr node
+
+        Args:
+            id (str): id of the CPoint
+            state (str): state we want to set for the CPoint
+        """
+        # TODO - Why am I looping through this, can we remove it and how do I ensure
+        # that this is only meant for IO components
         for vertex in self.G.nodes:
-            if vertex == name:
-                cpoint = self.getCPoint(name)
+            if vertex == id:
+                cpoint = self.get_cpoint(id)
                 # print("Found cpoint:.....", name, cpoint)
                 if IN == state:
-                    cpoint.flowrate = getFlowRate(name)
+                    cpoint.flowrate = get_flow_rate(id)
                 else:
-                    cpoint.pressure = getPressure(name)
+                    cpoint.pressure = get_pressure(id)
 
-    def isInletOutlet(self, component: Component) -> bool:
+    def is_inlet_outlet(self, component: Component) -> bool:
+        """Checks if the given component is an input/ouput in the microfluidic device
+
+        We do this by checking against the inoutdata dictionary that we load during the
+        creating of the ENetwork creation
+
+        Args:
+            component (Component): Component that we want to check
+
+        Returns:
+            bool: True if component is an inlet / outlet component
+        """
         print("inout data:", self.inoutdata)
         for key in self.inoutdata:
             if key == component.ID:
@@ -91,14 +142,36 @@ class ENetwork:
 
         return False
 
-    def annotate(self) -> None:
+    def __annotate(self) -> None:
+        """Annotates the components based on the initial config informatino
+
+        This is used to set the initial information (known state values) in the ENetwork
+        """
         for key in self.inoutdata:
             print("Annotating Config entry: ", key)
-            self.updateState(key, self.inoutdata[key])
+            self.update_state(key, self.inoutdata[key])
 
-    def connectComponentRElements(self, component: Component) -> None:
+    def connect_component_relements(self, component: Component) -> None:
+        """Connect the RElemnt in the ENetwork for the given component.
+
+        This is necessary because we of the way we decompose the component into
+        discrete RElements that we can then stitch together.
+
+        TODO - Currently we are assuming there are only two elements connecting
+        to each other, we need to figure out generalized ways to map how the components
+        that are not 1->1 need to be stitched together.
+
+        Args:
+            component (Component): Component for we which we need to assemble a RElement Network
+
+        Raises:
+            Exception: When components with greater than 2 ports (Target objects) are encountered
+        """
+
         # print("Component CPoints: ", self.componentCPoints[component.ID])
-        cpoints = self.componentCPoints[component.ID]
+        cpoints = self.component_CPoints[component.ID]
+
+        # TODO - make this work for the tuple of component ID and target
         relement = self.rElements[component.ID]
 
         if len(cpoints) == 2:
@@ -107,19 +180,33 @@ class ENetwork:
         else:
             raise Exception("Cannot account for components greater than 2")
 
-    def mapCPointForComponent(self, componentname: str, cpoint: CPoint) -> None:
+    def map_cpoint_for_component(self, componentname: str, cpoint: CPoint) -> None:
+        """Maps an association for a CPoint against an internal reverse look up
+        dictionary to simplify life.
+
+        Args:
+            componentname (str): Component name against which we want to save the CPoint association
+            cpoint (CPoint): CPoint we want to associate against the component
+        """
         # print("mapCPointForComponent - component name: ", componentname)
         array = None
-        if componentname in self.componentCPoints:
-            array = self.componentCPoints[componentname]
+        if componentname in self.component_CPoints:
+            array = self.component_CPoints[componentname]
         else:
             array = []
 
         array.append(cpoint)
-        self.componentCPoints[componentname] = array
+        self.component_CPoints[componentname] = array
         # print("CPOINT MAP: ", self.componentCPoints.keys())
 
-    def addConnectionCalculationPoints(self, connection: Connection) -> None:
+    def _add_connection_calculation_points(self, connection: Connection) -> None:
+        """Adds the calculation points assoicated with a connection into the ENetwork
+
+        Goes through each of the source sink pairs and then generate the caclulation points for each of them
+
+        Args:
+            connection (Connection): [description]
+        """
         # Get the connection source and sink, if its a inlet outlet, get the corresponding CPoint
         source = connection.source
         sourceref = source.component
@@ -130,43 +217,43 @@ class ENetwork:
             sinkref = sink.component
             sink_cpoint = None
             assert source is not None
-            cpoint_id = CPoint.generateCPointNameFromTarget(source)
+            cpoint_id = CPoint.generate_CPoint_name_from_target(source)
 
-            if sourceref in self.iocalculationPoints:
+            if sourceref in self.io_calculation_points:
                 print("Found source ref as calculation point")
-                source_cpoint = self.iocalculationPoints[sourceref]
+                source_cpoint = self.io_calculation_points[sourceref]
 
-            elif cpoint_id in self.internalCalculationPoints:
-                source_cpoint = self.internalCalculationPoints[cpoint_id]
+            elif cpoint_id in self.internal_calculation_points:
+                source_cpoint = self.internal_calculation_points[cpoint_id]
 
             else:
                 print("Brand new source calculation point")
-                source_cpoint = CPoint(cpoint_id)
-                self.internalCalculationPoints[cpoint_id] = source_cpoint
-                self.mapCPointForComponent(sourceref, source_cpoint)
+                source_cpoint = CPoint(cpoint_id, source)
+                self.internal_calculation_points[cpoint_id] = source_cpoint
+                self.map_cpoint_for_component(sourceref, source_cpoint)
                 # Now add the CPoint Node to graph
                 self.G.add_node(cpoint_id, data=source_cpoint)
 
-            cpoint_id = CPoint.generateCPointNameFromTarget(sink)
+            cpoint_id = CPoint.generate_CPoint_name_from_target(sink)
 
-            if sinkref in self.iocalculationPoints:
+            if sinkref in self.io_calculation_points:
                 print("Found sink as calculation point")
-                sink_cpoint = self.iocalculationPoints[sinkref]
+                sink_cpoint = self.io_calculation_points[sinkref]
 
-            elif cpoint_id in self.internalCalculationPoints:
-                sink_cpoint = self.internalCalculationPoints[cpoint_id]
+            elif cpoint_id in self.internal_calculation_points:
+                sink_cpoint = self.internal_calculation_points[cpoint_id]
 
             else:
                 print("Brand new sink calculation point")
-                sink_cpoint = CPoint(cpoint_id)
-                self.internalCalculationPoints[cpoint_id] = sink_cpoint
-                self.mapCPointForComponent(sinkref, sink_cpoint)
+                sink_cpoint = CPoint(cpoint_id, sink)
+                self.internal_calculation_points[cpoint_id] = sink_cpoint
+                self.map_cpoint_for_component(sinkref, sink_cpoint)
                 # Now add the CPoint Node to graph
                 self.G.add_node(cpoint_id, data=sink_cpoint)
 
             # Get the Edge Data (RElement corresponding to (source, sink) pair)
             relement = self.rElements[
-                RElement.getRElementNameForConnection(source, sink)
+                RElement.get_relement_name_for_connection(source, sink)
             ]
             # print("Queried RElement: ", relement)
             print("Creating Edge for: ", sourceref, sinkref)
@@ -174,17 +261,42 @@ class ENetwork:
 
             self.G.add_edge(source_cpoint.id, sink_cpoint.id, data=relement)
 
-    def getCPoint(self, cpoint_id: str) -> CPoint:
+    def get_cpoint(self, cpoint_id: str) -> CPoint:
+        """Returns the cPoint assoicated with the ID in the network
+
+        Args:
+            cpoint_id (str): cpoint id
+
+        Returns:
+            CPoint: CPoint associated with the id
+        """
         return self.G.nodes[cpoint_id]["data"]
 
-    def getResistanceBetween(self, source_id: str, sink_id: str) -> float:
-        data = self.G.get_edge_data(source_id, sink_id)
+    def get_resistance_between(self, source_cpoint_id: str, sink_sink_id: str) -> float:
+        """Gets the resistance between 2 CPoints
+
+        Args:
+            source_cpoint_id (str): Source CPoint node
+            sink_sink_id (str): Sink CPoint node
+
+        Returns:
+            float: Value of the Fluidic Resistance
+        """
+        data = self.G.get_edge_data(source_cpoint_id, sink_sink_id)
         return data["data"].resistance
 
-    def updatePressure(self, cpoint_id: str, value: float) -> None:
-        cpoint = self.getCPoint(cpoint_id)
+    def update_pressure(self, cpoint_id: str, value: float) -> None:
+        """Updates the pressure of the
+
+        [extended_summary]
+
+        Args:
+            cpoint_id (str): [description]
+            value (float): [description]
+        """
+        cpoint = self.get_cpoint(cpoint_id)
         cpoint.pressure = value
 
     def getAllCPoints(self) -> List[CPoint]:
-        ret = [self.getCPoint(node) for node in self.G.nodes]
+        ret = [self.get_cpoint(node) for node in self.G.nodes]
         return ret
