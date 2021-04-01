@@ -34,16 +34,16 @@ class Solver:
         self.eNetwork = enetwork
 
         print("Setting up Flow Rate Equations")
-        for key in enetwork.iocalculationPoints.keys():
-            cpoint = enetwork.iocalculationPoints[key]
+        for key in enetwork.io_calculation_points.keys():
+            cpoint = enetwork.io_calculation_points[key]
 
             # Do not construct equation if pressure is known
             if cpoint.pressure == None:
                 equation = FlowEquation.constructFlowEquation(enetwork, cpoint)
                 self.flowRateEquations.append(equation)
 
-        for key in enetwork.internalCalculationPoints.keys():
-            cpoint = enetwork.internalCalculationPoints[key]
+        for key in enetwork.internal_calculation_points.keys():
+            cpoint = enetwork.internal_calculation_points[key]
 
             # Do not construct equation if pressure is known
             if cpoint.pressure == None:
@@ -94,4 +94,4 @@ class Solver:
 
         print("Updating ENetwork...")
         for i in range(len(eqindex)):
-            self.eNetwork.updatePressure(eqindex[i], X[i, 0])
+            self.eNetwork.update_pressure(eqindex[i], X[i, 0])

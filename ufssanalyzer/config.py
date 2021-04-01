@@ -7,7 +7,7 @@ flowrateDict: Dict[str, float] = dict()
 inletOutletDict: Dict[str, str] = dict()
 
 
-def setPressure(name: str, pressure: float) -> None:
+def set_pressure(name: str, pressure: float) -> None:
     print("Setting pressure", name, pressure)
     pressureDict[name] = pressure
 
@@ -16,20 +16,20 @@ def get_pressure(name: str) -> float:
     return pressureDict[name]
 
 
-def setFlowRate(name: str, flowrate: float) -> None:
+def set_flowrate(name: str, flowrate: float) -> None:
     print("Setting pressure", name, flowrate)
     flowrateDict[name] = flowrate
 
 
-def get_flow_rate(name: str) -> float:
+def get_flowrate(name: str) -> float:
     return flowrateDict[name]
 
 
-def setInletOutlet(name: str, state: str) -> None:
+def set_inlet_outlet(name: str, state: str) -> None:
     inletOutletDict[name] = state
 
 
-def getInletOutlet(name: str) -> str:
+def get_inlet_outlet(name: str) -> str:
     return inletOutletDict[name]
 
 
@@ -37,7 +37,7 @@ def get_inlets_outlets() -> Dict[str, str]:
     return inletOutletDict
 
 
-def getIDForName(name: str, device: Device) -> str:
+def get_id_for_name(name: str, device: Device) -> str:
     components = device.get_components()
     for component in components:
         if component.name == name:
@@ -45,21 +45,27 @@ def getIDForName(name: str, device: Device) -> str:
     raise Exception("Could not find component with name in config:", name)
 
 
-def parseConfig(file: TextIO, device: Device) -> None:
+def parse_config(file: TextIO, device: Device) -> None:
+    """Parses the config file and sets the fixed states of the entire device
+
+    Args:
+        file (TextIO): Config File pointer
+        device (Device): Device object
+    """
 
     lines = file.read().splitlines()
     for line in lines:
         line = line.strip()
         parts = line.split(",")
         name = parts[0].strip()
-        id = getIDForName(name, device)
+        id = get_id_for_name(name, device)
         state = parts[1].strip()
         value = parts[2].strip()
-        setInletOutlet(id, state)
+        set_inlet_outlet(id, state)
         if state == "IN":
-            setFlowRate(id, float(value))
+            set_flowrate(id, float(value))
         elif state == "OUT":
-            setPressure(id, float(value))
+            set_pressure(id, float(value))
         else:
             print("Unkown state:", state)
     file.close()

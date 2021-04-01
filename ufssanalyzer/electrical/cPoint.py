@@ -4,10 +4,7 @@ from parchmint.target import Target
 
 class CPoint:
     """CPoint/Calculation point is the class that encapsulates the point of interest where
-    flowequaitons are constructed and the states are evaluated
-
-    Returns:
-        [type] -- [description]
+    flowequaitons are constructed and the states are evaluated.
     """
 
     def __init__(self, id: str, target: Optional[Target]):

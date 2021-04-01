@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 
-from ufssanalyzer.config import parseConfig
+from ufssanalyzer.config import parse_config
 from ufssanalyzer.electrical.eNetwork import ENetwork
 from parchmint.device import Device
 from ufssanalyzer.solver.solver import Solver
@@ -26,7 +26,7 @@ def solve_network():
 
     device = Device(JSON)
 
-    parseConfig(file_c, device)
+    parse_config(file_c, device)
 
     print("Printing the Micrfluidic Network's edges:")
     for edge in device.G.edges():
@@ -43,7 +43,7 @@ def solve_network():
     solver.solve()
 
     print("Final Results")
-    for cpoint in electrical_network.getAllCPoints():
+    for cpoint in electrical_network.get_all_cpoints():
         parts = cpoint.id.split("_")
         nodename = device.get_component(parts[0]).name
 

@@ -4,7 +4,7 @@ from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.target import Target
 
-from ufssanalyzer.config import get_flow_rate, get_inlets_outlets, get_pressure
+from ufssanalyzer.config import get_flowrate, get_inlets_outlets, get_pressure
 
 from ufssanalyzer.electrical.constants import IN
 from ufssanalyzer.electrical.cPoint import CPoint
@@ -13,7 +13,28 @@ from parchmint import Device
 
 
 class ENetwork:
+    """ENetwork Class
+
+    ENetwork is the generalized electical model for a microfluidic network.
+    The Networks is a simple graph G (V,E) where V is the set of all CPoint
+    instances which indicate where the calculation is going to take place.
+    E is the set of all the RElement Instances. This generalized model lets
+    us build eletrical models for arbitrarily complex microfluidic device
+    without needing to worry the specific types of abstractions or finding
+    the best RElement models.
+
+    Note: We are storing the RElement reference in graph edge dictionary.
+
+    """
+
     def __init__(self, device: Device):
+        """Creates a new instance of the ENetwork
+
+        [extended_summary]
+
+        Args:
+            device (Device): [description]
+        """
         self.G = nx.Graph()
 
         # TODO - Figure out how much the io vs internal calcuation points
@@ -67,7 +88,7 @@ class ENetwork:
 
         # Generate all the rlements for the connections
         for connection in connections:
-            relements = RElement.generateRElementsFromConnection(connection)
+            relements = RElement.generate_relements_from_connection(connection)
 
             # Add each of the relements from the static method
             for relement in relements:
@@ -119,7 +140,7 @@ class ENetwork:
                 cpoint = self.get_cpoint(id)
                 # print("Found cpoint:.....", name, cpoint)
                 if IN == state:
-                    cpoint.flowrate = get_flow_rate(id)
+                    cpoint.flowrate = get_flowrate(id)
                 else:
                     cpoint.pressure = get_pressure(id)
 
@@ -286,17 +307,20 @@ class ENetwork:
         return data["data"].resistance
 
     def update_pressure(self, cpoint_id: str, value: float) -> None:
-        """Updates the pressure of the
-
-        [extended_summary]
+        """Updates the pressure of the cpoint
 
         Args:
-            cpoint_id (str): [description]
-            value (float): [description]
+            cpoint_id (str): CPoint we want to change
+            value (float): value we want to change
         """
         cpoint = self.get_cpoint(cpoint_id)
         cpoint.pressure = value
 
-    def getAllCPoints(self) -> List[CPoint]:
+    def get_all_cpoints(self) -> List[CPoint]:
+        """Gets all the CPoints associated with ENetwork
+
+        Returns:
+            List[CPoint]: List of CPoints in the network
+        """
         ret = [self.get_cpoint(node) for node in self.G.nodes]
         return ret
