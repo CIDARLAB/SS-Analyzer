@@ -8,7 +8,7 @@ class CPoint:
     """
 
     def __init__(self, id: str, target: Optional[Target]):
-        """[summary]
+        """Initializes a new CPoint
 
         Arguments:
             id {string} --
@@ -31,10 +31,10 @@ class CPoint:
         """Generates the identifier that has follows the required cpoint convention
 
         Arguments:
-            target {Target} -- [description]
+            target {Target} -- Target corresponding to the connection
 
         Returns:
-            [type] -- [description]
+            [str] -- Name of the cpoint
         """
         target_port = target.port
         if target_port == None:
