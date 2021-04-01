@@ -3,7 +3,7 @@ import networkx as nx
 from parchmint.component import Component
 from parchmint.connection import Connection
 
-from config import getFlowRate, getInletsAndOutlets, getPressure
+from ufssanalyzer.config import getFlowRate, getInletsAndOutlets, getPressure
 
 from ufssanalyzer.electrical.constants import IN
 from ufssanalyzer.electrical.cPoint import CPoint

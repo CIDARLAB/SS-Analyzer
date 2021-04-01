@@ -1,0 +1,434 @@
+{
+    "name": "My Other Device",
+    "params": {
+        "xspan": 135000,
+        "yspan": 85000,
+        "valveMap": {},
+        "valveTypeMap": {}
+    },
+    "components": [
+        {
+            "id": "2cd2e2f0-9271-11eb-b792-874f5ec91987",
+            "name": "Port_1",
+            "entity": "PORT",
+            "params": {
+                "position": [
+                    30000,
+                    40000
+                ],
+                "componentSpacing": 1000,
+                "portRadius": 700,
+                "height": 1100
+            },
+            "x-span": 1400,
+            "y-span": 1400,
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 0,
+                    "layer": "FLOW",
+                    "label": "1"
+                }
+            ],
+            "layers": [
+                "2236f980-9271-11eb-b792-874f5ec91987"
+            ]
+        },
+        {
+            "id": "2dc950e0-9271-11eb-b792-874f5ec91987",
+            "name": "Port_2",
+            "entity": "PORT",
+            "params": {
+                "position": [
+                    70000,
+                    40000
+                ],
+                "componentSpacing": 1000,
+                "portRadius": 700,
+                "height": 1100
+            },
+            "x-span": 1400,
+            "y-span": 1400,
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 0,
+                    "layer": "FLOW",
+                    "label": "1"
+                }
+            ],
+            "layers": [
+                "2236f980-9271-11eb-b792-874f5ec91987"
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "id": "340d51e0-9271-11eb-b792-874f5ec91987",
+            "name": "CHANNEL_1",
+            "entity": "CHANNEL",
+            "source": {
+                "component": "2cd2e2f0-9271-11eb-b792-874f5ec91987",
+                "port": "1"
+            },
+            "sinks": [
+                {
+                    "component": "2dc950e0-9271-11eb-b792-874f5ec91987",
+                    "port": "1"
+                }
+            ],
+            "paths": [
+                [
+                    [
+                        30000,
+                        40000
+                    ],
+                    [
+                        70000,
+                        40000
+                    ]
+                ]
+            ],
+            "params": {
+                "start": [
+                    30000,
+                    40000
+                ],
+                "end": [
+                    70000,
+                    40000
+                ],
+                "wayPoints": [
+                    [
+                        30000,
+                        40000
+                    ],
+                    [
+                        70000,
+                        40000
+                    ]
+                ],
+                "segments": [
+                    [
+                        [
+                            30000,
+                            40000
+                        ],
+                        [
+                            30000,
+                            40000
+                        ]
+                    ],
+                    [
+                        [
+                            30000,
+                            40000
+                        ],
+                        [
+                            70000,
+                            40000
+                        ]
+                    ],
+                    [
+                        [
+                            70000,
+                            40000
+                        ],
+                        [
+                            70000,
+                            40000
+                        ]
+                    ]
+                ],
+                "connectionSpacing": 1600,
+                "channelWidth": 800,
+                "height": 250
+            },
+            "layer": "2236f980-9271-11eb-b792-874f5ec91987"
+        }
+    ],
+    "layers": [
+        {
+            "id": "2236f980-9271-11eb-b792-874f5ec91987",
+            "name": "flow",
+            "type": "FLOW",
+            "group": "0",
+            "params": {
+                "z_offset": 0,
+                "flip": false
+            }
+        },
+        {
+            "id": "2236f981-9271-11eb-b792-874f5ec91987",
+            "name": "control",
+            "type": "FLOW",
+            "group": "0",
+            "params": {
+                "z_offset": 1200,
+                "flip": true
+            }
+        },
+        {
+            "id": "22372090-9271-11eb-b792-874f5ec91987",
+            "name": "cells",
+            "type": "FLOW",
+            "group": "0",
+            "params": {
+                "z_offset": 2000,
+                "flip": false
+            }
+        }
+    ],
+    "features": [
+        {
+            "name": "flow",
+            "color": "indigo",
+            "params": {
+                "z_offset": 0,
+                "flip": false
+            },
+            "features": {
+                "223d8930-9271-11eb-b792-874f5ec91987": {
+                    "id": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "name": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "macro": "EDGE",
+                    "set": "Basic",
+                    "dxfData": [
+                        {
+                            "type": "POLYLINE",
+                            "vertices": [
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "EDGE"
+                },
+                "2cd1f890-9271-11eb-b792-874f5ec91987": {
+                    "id": "2cd1f890-9271-11eb-b792-874f5ec91987",
+                    "name": "New Feature",
+                    "macro": "Port",
+                    "set": "Basic",
+                    "referenceID": "2cd2e2f0-9271-11eb-b792-874f5ec91987",
+                    "params": {
+                        "position": [
+                            30000,
+                            40000
+                        ],
+                        "componentSpacing": 1000,
+                        "portRadius": 700,
+                        "height": 1100
+                    },
+                    "dxfData": [],
+                    "type": "XY"
+                },
+                "2dc88d90-9271-11eb-b792-874f5ec91987": {
+                    "id": "2dc88d90-9271-11eb-b792-874f5ec91987",
+                    "name": "New Feature",
+                    "macro": "Port",
+                    "set": "Basic",
+                    "referenceID": "2dc950e0-9271-11eb-b792-874f5ec91987",
+                    "params": {
+                        "position": [
+                            70000,
+                            40000
+                        ],
+                        "componentSpacing": 1000,
+                        "portRadius": 700,
+                        "height": 1100
+                    },
+                    "dxfData": [],
+                    "type": "XY"
+                },
+                "33356870-9271-11eb-b792-874f5ec91987": {
+                    "id": "33356870-9271-11eb-b792-874f5ec91987",
+                    "name": "New Feature",
+                    "macro": "Connection",
+                    "set": "Basic",
+                    "referenceID": "340d51e0-9271-11eb-b792-874f5ec91987",
+                    "params": {
+                        "start": [
+                            30000,
+                            40000
+                        ],
+                        "end": [
+                            70000,
+                            40000
+                        ],
+                        "wayPoints": [
+                            [
+                                30000,
+                                40000
+                            ],
+                            [
+                                70000,
+                                40000
+                            ]
+                        ],
+                        "segments": [
+                            [
+                                [
+                                    30000,
+                                    40000
+                                ],
+                                [
+                                    30000,
+                                    40000
+                                ]
+                            ],
+                            [
+                                [
+                                    30000,
+                                    40000
+                                ],
+                                [
+                                    70000,
+                                    40000
+                                ]
+                            ],
+                            [
+                                [
+                                    70000,
+                                    40000
+                                ],
+                                [
+                                    70000,
+                                    40000
+                                ]
+                            ]
+                        ],
+                        "connectionSpacing": 1600,
+                        "channelWidth": 800,
+                        "height": 250
+                    },
+                    "dxfData": [],
+                    "type": "XY"
+                }
+            }
+        },
+        {
+            "name": "control",
+            "color": "red",
+            "params": {
+                "z_offset": 1200,
+                "flip": true
+            },
+            "features": {
+                "223d8930-9271-11eb-b792-874f5ec91987": {
+                    "id": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "name": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "macro": "EDGE",
+                    "set": "Basic",
+                    "dxfData": [
+                        {
+                            "type": "POLYLINE",
+                            "vertices": [
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "EDGE"
+                }
+            }
+        },
+        {
+            "name": "cells",
+            "color": "indigo",
+            "params": {
+                "z_offset": 2000,
+                "flip": false
+            },
+            "features": {
+                "223d8930-9271-11eb-b792-874f5ec91987": {
+                    "id": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "name": "223d8930-9271-11eb-b792-874f5ec91987",
+                    "macro": "EDGE",
+                    "set": "Basic",
+                    "dxfData": [
+                        {
+                            "type": "POLYLINE",
+                            "vertices": [
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 0,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 135,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 85,
+                                    "z": 0
+                                },
+                                {
+                                    "x": 0,
+                                    "y": 0,
+                                    "z": 0
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "EDGE"
+                }
+            }
+        }
+    ],
+    "version": 1.1,
+    "groups": [],
+    "customComponents": {}
+}

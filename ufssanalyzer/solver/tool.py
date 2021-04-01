@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 
-from config import parseConfig
+from ufssanalyzer.config import parseConfig
 from ufssanalyzer.electrical.eNetwork import ENetwork
 from parchmint.device import Device
 from ufssanalyzer.solver.solver import Solver

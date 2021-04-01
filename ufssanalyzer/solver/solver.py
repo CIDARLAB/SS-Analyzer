@@ -6,11 +6,27 @@ from ufssanalyzer.solver.flowEquation import FlowEquation
 
 
 class Solver:
+    """The Solver class can be used to solve a system of equations.
+
+    How to use the solver class:
+    1. use `initialize` for the solver to formulate the Flow Equations at each of the CPoints
+    2. use `solve` for the solver to construct the matrices and then solve the entire system of equations
+    """
+
     def __init__(self):
         self.flowRateEquations: List[FlowEquation] = []
         self.eNetwork: Optional[ENetwork] = None
 
     def initialize(self, enetwork: ENetwork) -> None:
+        """Initialize the solver with the ENetwork
+
+        This method goes ahead and gernates all the flow equations
+        at each of the CPoints. This is equal to the node equations
+        seen in electrical networks.
+
+        Args:
+            enetwork (ENetwork): [description]
+        """
         # Setup Flow Equations for each of the calculation points
         # print(enetwork.iocalculationPoints)
         # print(enetwork.internalCalculationPoints)
@@ -35,6 +51,13 @@ class Solver:
                 self.flowRateEquations.append(equation)
 
     def solve(self) -> None:
+        """Solves the system of equations that are set up in the form of
+        FlowEquation objects.
+
+        The method sets up the matrices (Ax = B) and then utilizes numpy's
+        linear solver to solve the matrices and repopulate the ENetwork.
+        """
+
         # Setup the Matrices for the Solver
         # Run through each of the equations and start setting up the matrices
         # A Matrix in AX = B

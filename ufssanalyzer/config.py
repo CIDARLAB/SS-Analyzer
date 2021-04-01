@@ -1,43 +1,56 @@
-pressureDict = dict() 
-flowrateDict = dict() 
-inletOutletDict = dict()
+from typing import Dict, TextIO
+from parchmint.device import Device
 
-def setPressure(name, pressure):
+
+pressureDict: Dict[str, float] = dict()
+flowrateDict: Dict[str, float] = dict()
+inletOutletDict: Dict[str, str] = dict()
+
+
+def setPressure(name: str, pressure: float) -> None:
     print("Setting pressure", name, pressure)
     pressureDict[name] = pressure
 
-def getPressure(name):
+
+def getPressure(name: str) -> float:
     return pressureDict[name]
 
-def setFlowRate(name, flowrate):
+
+def setFlowRate(name: str, flowrate: float) -> None:
     print("Setting pressure", name, flowrate)
     flowrateDict[name] = flowrate
 
-def getFlowRate(name):
+
+def getFlowRate(name: str) -> float:
     return flowrateDict[name]
 
-def setInletOutlet(name, state):
+
+def setInletOutlet(name: str, state: str) -> None:
     inletOutletDict[name] = state
 
-def getInletOutlet(name):
+
+def getInletOutlet(name: str) -> str:
     return inletOutletDict[name]
 
-def getInletsAndOutlets():
+
+def getInletsAndOutlets() -> Dict[str, str]:
     return inletOutletDict
 
-def getIDForName(name, device):
-    components = device.getComponents()
+
+def getIDForName(name: str, device: Device) -> str:
+    components = device.get_components()
     for component in components:
         if component.name == name:
             return component.ID
     raise Exception("Could not find component with name in config:", name)
 
-def parseConfig(file, device):
+
+def parseConfig(file: TextIO, device: Device) -> None:
 
     lines = file.read().splitlines()
-    for line in lines: 
+    for line in lines:
         line = line.strip()
-        parts = line.split(',')
+        parts = line.split(",")
         name = parts[0].strip()
         id = getIDForName(name, device)
         state = parts[1].strip()
@@ -48,5 +61,5 @@ def parseConfig(file, device):
         elif state == "OUT":
             setPressure(id, float(value))
         else:
-            print('Unkown state:', state)
+            print("Unkown state:", state)
     file.close()
