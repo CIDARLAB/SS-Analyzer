@@ -5,6 +5,11 @@ description = "S-Analyzer (State Space Analyzer) is a tool that allows the user 
 authors = ["Radhakrishna Sanka <rkrishnasanka@gmail.com>"]
 license = "BSD-2 Clause"
 
+packages = [
+    { include = "ufssanalyzer/*.py"}
+]
+
+
 [tool.poetry.dependencies]
 python = "^3.8"
 parchmint = "^0.2.6"
